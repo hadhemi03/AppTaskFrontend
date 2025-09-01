@@ -30,7 +30,7 @@ export const taskSlice = createSlice({
       const index = state.tasks.findIndex((t) => t.id === action.payload.id);
   if (index !== -1) {
     state.tasks[index] = { 
-      ...state.tasks[index],  // keep existing fields (like created_by)
+      ...state.tasks[index],  
       ...action.payload       // overwrite with new data
     };
     }
