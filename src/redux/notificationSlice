@@ -1,0 +1,50 @@
+import { createSlice } from '@reduxjs/toolkit';
+
+let initialNotifications = [];
+try {
+    const stored = localStorage.getItem("notifications");
+    initialNotifications = stored ? JSON.parse(stored) : [];
+} catch {
+    initialNotifications = [];
+}
+
+const notificationSlice = createSlice({
+    name: 'notifications',
+    initialState: initialNotifications,
+    reducers: {
+        setNotifications: (state, action) => {
+            localStorage.setItem("notifications", JSON.stringify(action.payload));
+            return action.payload;
+        },
+        addNotification: (state, action) => {
+            const notif = {
+                id: action.payload.id || action.payload.notification_id || Date.now(),
+                title: action.payload.title,
+                body: action.payload.body,
+                data: action.payload.data ? action.payload.data : (action.payload.task ? { task: action.payload.task } : {}),
+                is_read: action.payload.is_read || false
+            };
+
+            const exists = state.some(n => n.id === notif.id);
+            const updated = exists ? state : [notif, ...state];
+            localStorage.setItem("notifications", JSON.stringify(updated));
+            return updated;
+        },
+
+        dismissNotification: (state, action) => {
+            const updated = state.filter(notif => notif.id !== action.payload);
+            localStorage.setItem("notifications", JSON.stringify(updated));
+            return updated;
+        },
+        markAsRead: (state, action) => {
+            const updated = state.map(notif =>
+                notif.id === action.payload ? { ...notif, is_read: true } : notif
+            );
+            localStorage.setItem("notifications", JSON.stringify(updated));
+            return updated;
+        },
+    },
+});
+
+export const { setNotifications, addNotification, dismissNotification, markAsRead } = notificationSlice.actions;
+export default notificationSlice.reducer;

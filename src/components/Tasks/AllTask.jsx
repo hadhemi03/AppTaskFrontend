@@ -34,6 +34,8 @@ const AllTask = () => {
 	const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 	const [taskToView, setTaskToView] = useState(null);
 
+	const userRole = useSelector((state) => state.auth.user.role);
+
 
 
 	const handleEdit = (task) => {
@@ -110,103 +112,115 @@ const AllTask = () => {
 
 
 	return (
-		<div className="flex flex-col p-4">
+		<div className="flex flex-col p-4 h-full">
 			<TaskBodyHeading todoHeading="All Tasks" />
 
+			<div className="flex-1 max-h-[400px] overflow-y-auto pr-2">
 
-			{loading && <p className={`${enabled ? "text-white/60" : "text-black/60"} mt-2`}>Loading…</p>}
-			{err && <p className="text-red-500 mt-2">{err}</p>}
+				{loading && <p className={`${enabled ? "text-white/60" : "text-black/60"} mt-2`}>Loading…</p>}
+				{err && <p className="text-red-500 mt-2">{err}</p>}
 
-			{!loading &&
-				!err &&
-				tasks.map((item) => {
-					const { id, title, status, starred } = item;
+				{!loading &&
+					!err &&
+					tasks.map((item) => {
+						const { id, title, status, starred } = item;
 
-					const isCompleted = status === "done";
-					const isStarred = !!starred;
-					return (
-						<div
-							key={id}
-							onClick={() => {
-								setTaskToView(item);
-								setIsInfoModalOpen(true);
-							}}
-							className={`${enabled ? "bg-[#2f2d36] hover:bg-black/10" : "bg-[#d3dee3] hover:bg-[#c4cdd1]"
-								} flex justify-between items-center my-4 b p-2 rounded-lg cursor-pointer transition-all duration-200 shadow-one hover:shadow-two group`}
-						>
-							<div className="flex items-center gap-4">
-								{isCompleted ? (
-									<RiCheckboxCircleFill color="#7a8db0" />
-								) : (
-									<RiCheckboxBlankCircleLine color="#7a8db0" />
-								)}
-
-								<div>
-									<p
-										className={`${enabled ? "text-white/60" : "text-black/60"} ${isCompleted ? "line-through" : ""
-											} font-Lexend text-[17px] font-medium`}
-									>
-										{title}
-									</p>
-									<p className={`${enabled ? "text-white/30" : "text-black/40"} text-sm`}>
-										<StatusColored status={status} />
-
-										{item.due_date ? `due ${item.due_date}` : ""}
-									</p>
-								</div>
-							</div>
-
-							<div className="flex justify-between items-center gap-4">
-								<div className="flex gap-4">
-									<FaEdit
-										onClick={(e) => {
-											e.stopPropagation();
-											handleEdit(item);
-										}}
-										className="group-hover:block hidden"
-										color={enabled ? "#7f5bf7" : "#f8917e"}
-									/>
-									<MdDelete
-										onClick={(e) => {
-											e.stopPropagation();
-											setTaskToDelete(item.id);
-											setIsDeleteModalOpen(true);
-										}}
-										className="group-hover:block hidden"
-										color={enabled ? "#7f5bf7" : "#f8917e"}
-									/>
-
-								</div>
-								<div>
-									{isStarred ? (
-										<RiStarFill
-											onClick={(e) => {
-												e.stopPropagation();
-												handleToggleStar(id);
-											}}
-											color="gray" // starred = gray
-											size={20}
-										/>
+						const isCompleted = status === "done";
+						const isStarred = !!starred;
+						return (
+							<div
+								key={id}
+								onClick={() => {
+									setTaskToView(item);
+									setIsInfoModalOpen(true);
+								}}
+								className={`${enabled ? "bg-[#2f2d36] hover:bg-black/10" : "bg-[#d3dee3] hover:bg-[#c4cdd1]"
+									} flex justify-between items-center my-4 b p-2 rounded-lg cursor-pointer transition-all duration-200 shadow-one hover:shadow-two group`}
+							>
+								<div className="flex items-center gap-4">
+									{isCompleted ? (
+										<RiCheckboxCircleFill color="#7a8db0" />
 									) : (
-										<RiStarLine
-											onClick={(e) => {
-												e.stopPropagation();
-												handleToggleStar(id);
-											}}
-											color="#7a8db0" // not starred
-											size={20}
-										/>
+										<RiCheckboxBlankCircleLine color="#7a8db0" />
 									)}
 
+									<div>
+										<p
+											className={`${enabled ? "text-white/60" : "text-black/60"} ${isCompleted ? "line-through" : ""
+												} font-Lexend text-[17px] font-medium`}
+										>
+											{title}
+										</p>
+										<p className={`${enabled ? "text-white/30" : "text-black/40"} text-sm`}>
+											<StatusColored status={status} />
 
+											{item.due_date && (
+												<span className="bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-100 px-2 py-0.5 rounded-full text-xs ">
+													Due {item.due_date}
+												</span>
+											)}
+											{userRole === "admin" && item.created_by && (
+												<span className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 px-2 py-0.5 rounded-full text-xs ml-2">
+													Created by {item.created_by}
+												</span>
+											)}
+										</p>
+									</div>
+								</div>
+
+								<div className="flex justify-between items-center gap-4">
+									<div className="flex gap-4">
+										<FaEdit
+											onClick={(e) => {
+												e.stopPropagation();
+												handleEdit(item);
+											}}
+											className="group-hover:block hidden"
+											color={enabled ? "#7f5bf7" : "#f8917e"}
+										/>
+										<MdDelete
+											onClick={(e) => {
+												e.stopPropagation();
+												setTaskToDelete(item.id);
+												setIsDeleteModalOpen(true);
+											}}
+											className="group-hover:block hidden"
+											color={enabled ? "#7f5bf7" : "#f8917e"}
+										/>
+
+									</div>
+									<div>
+										{isStarred ? (
+											<RiStarFill
+												onClick={(e) => {
+													e.stopPropagation();
+													handleToggleStar(id);
+												}}
+												color="gray" // starred = gray
+												size={20}
+											/>
+										) : (
+											<RiStarLine
+												onClick={(e) => {
+													e.stopPropagation();
+													handleToggleStar(id);
+												}}
+												color="#7a8db0" // not starred
+												size={20}
+											/>
+										)}
+
+
+									</div>
 								</div>
 							</div>
-						</div>
-					)
-				})}
+						)
+					})}
+			</div>
+
 
 			{/* Add task button */}
-			<div className="flex justify-end">
+			<div className="sticky bottom-0  dark:bg-[#1c1c1c] py-2 mt-2 flex justify-end shadow-md">
 				<Button to="addTask" btnText="Add Task" />
 			</div>
 

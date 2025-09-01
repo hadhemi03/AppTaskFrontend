@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit"
 import {taskList, themeList} from "../../../public/taskList"
 
-const initialState = {tasks: taskList, themeList: themeList}
+const initialState = { themeList: themeList}
 
 const themeSlice = createSlice({
 	name: "theme",
