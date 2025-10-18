@@ -17,7 +17,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import StatusColored from "../../shared/StatusColored"
 import InfoModal from "../../shared/InfoModal"
-import { deleteTask, fetchTasks } from "../../redux/TaskSlice"
+import { deleteTask, fetchTasks, toggleStar } from "../../redux/TaskSlice"
 
 const AllTask = () => {
 	const dispatch = useDispatch();
@@ -91,12 +91,9 @@ const AllTask = () => {
 				}
 			);
 
-			// update local state
-			setTasks(prev =>
-				prev.map(t =>
-					t.id === taskId ? { ...t, starred: res.data.starred } : t
-				)
-			);
+			// Update Redux state immediately
+			dispatch(toggleStar({ id: taskId, starred: res.data.starred }));
+
 		} catch (err) {
 			console.error("Error toggling star:", err.response?.data || err.message);
 			alert("Failed to toggle star");
