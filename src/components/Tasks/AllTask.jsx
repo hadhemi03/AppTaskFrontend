@@ -9,7 +9,7 @@ import {
 
 import Button from "../../shared/Button"
 import TaskBodyHeading from "../../shared/TaskBodyHeading"
-import { changeComponent, editTask } from "../../redux/BodyComponentSlice/componentSlice"
+import { changeComponent, editTask, setTasks } from "../../redux/BodyComponentSlice/componentSlice"
 
 import { FaEdit } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
@@ -92,11 +92,12 @@ const AllTask = () => {
 			);
 
 			// update local state
-			setTasks(prev =>
-				prev.map(t =>
+			dispatch(setTasks(
+				tasks.map(t =>
 					t.id === taskId ? { ...t, starred: res.data.starred } : t
 				)
-			);
+			));
+
 		} catch (err) {
 			console.error("Error toggling star:", err.response?.data || err.message);
 			alert("Failed to toggle star");
