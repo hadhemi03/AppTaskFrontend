@@ -9,7 +9,7 @@ import {
 
 import Button from "../../shared/Button"
 import TaskBodyHeading from "../../shared/TaskBodyHeading"
-import { changeComponent, editTask, setTasks } from "../../redux/BodyComponentSlice/componentSlice"
+import { changeComponent, editTask } from "../../redux/BodyComponentSlice/componentSlice"
 
 import { FaEdit } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
@@ -17,7 +17,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import StatusColored from "../../shared/StatusColored"
 import InfoModal from "../../shared/InfoModal"
-import { deleteTask, fetchTasks } from "../../redux/TaskSlice"
+import { deleteTask, fetchTasks, toggleStar } from "../../redux/TaskSlice"
 
 const AllTask = () => {
 	const dispatch = useDispatch();
@@ -91,12 +91,8 @@ const AllTask = () => {
 				}
 			);
 
-			// update local state
-			dispatch(setTasks(
-				tasks.map(t =>
-					t.id === taskId ? { ...t, starred: res.data.starred } : t
-				)
-			));
+			// Update Redux state immediately
+			dispatch(toggleStar({ id: taskId, starred: res.data.starred }));
 
 		} catch (err) {
 			console.error("Error toggling star:", err.response?.data || err.message);
