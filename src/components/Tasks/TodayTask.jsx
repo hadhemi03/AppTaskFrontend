@@ -147,7 +147,7 @@ const TodayTask = () => {
 									<div className="flex flex-wrap gap-2 mt-1">
 										{userRole === "admin" && item.created_by && (
 											<span className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 px-2 py-0.5 rounded-full text-xs">
-												Created by {item.created_by}
+												Assigned by {item.created_by}
 											</span>
 										)}
 										{item.due_date && (

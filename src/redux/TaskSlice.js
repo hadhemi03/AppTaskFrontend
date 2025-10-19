@@ -8,7 +8,7 @@ export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-  console.log("Fetched tasks:", response.data); 
+  console.log("Fetched tasks:", response.data);
   return response.data; // array of tasks
 });
 
@@ -28,13 +28,20 @@ export const taskSlice = createSlice({
     },
     updateTask: (state, action) => {
       const index = state.tasks.findIndex((t) => t.id === action.payload.id);
-  if (index !== -1) {
-    state.tasks[index] = { 
-      ...state.tasks[index],  
-      ...action.payload       // overwrite with new data
-    };
-    }
-  },
+      if (index !== -1) {
+        state.tasks[index] = {
+          ...state.tasks[index],
+          ...action.payload       // overwrite with new data
+        };
+      }
+    },
+    toggleStar: (state, action) => {
+      const { id, starred } = action.payload;
+      const task = state.tasks.find((t) => t.id === id);
+      if (task) {
+        task.starred = starred;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -52,5 +59,5 @@ export const taskSlice = createSlice({
   },
 });
 
-export const { addTask, deleteTask, updateTask } = taskSlice.actions;
+export const { addTask, deleteTask, updateTask, toggleStar } = taskSlice.actions;
 export default taskSlice.reducer;
