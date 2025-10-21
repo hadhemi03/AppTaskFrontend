@@ -7,6 +7,7 @@ import AddTask from "./Tasks/AddTask"
 import EditTask from "./Tasks/EditTask"
 import SingleTask from "./Tasks/SingleTask"
 import ProjectTasks from "./Tasks/ProjectTasks"
+import MyTasksAdmin from "./Tasks/MyTasksAdmin"
 
 const TodoBody = () => {
 	const {enabled} = useSelector((state) => state.theme.themeList)
@@ -24,6 +25,7 @@ const TodoBody = () => {
 			{renderElement == "editTask" && <EditTask />}
 			{renderElement == "single-task" && <SingleTask />}
 			{renderElement == "project-task" && <ProjectTasks />}
+			{renderElement == "myTask" && <MyTasksAdmin />}
 		</div>
 	)
 }
