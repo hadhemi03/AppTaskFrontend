@@ -20,6 +20,10 @@ import InfoModal from "../../shared/InfoModal"
 import { deleteTask, fetchTasks, toggleStar } from "../../redux/TaskSlice"
 
 const AllTask = () => {
+
+	const [users, setUsers] = useState([]);
+	const [selectedUser, setSelectedUser] = useState("");
+
 	const dispatch = useDispatch();
 	const { enabled } = useSelector((state) => state.theme.themeList);
 
@@ -100,10 +104,46 @@ const AllTask = () => {
 		}
 	};
 
+	const handleUserChange = async (e) => {
+		const userId = e.target.value;
+		setSelectedUser(userId);
+
+		if (userId === "") {
+			dispatch(fetchTasks());
+			return;
+		}
+
+		try {
+			const res = await axios.get(`http://localhost:8000/api/tasks/user/${userId}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			});
+			dispatch({ type: "tasks/setTasks", payload: res.data });
+		} catch (err) {
+			console.error("Error fetching user tasks:", err.response?.data || err.message);
+		}
+	};
+
+
 
 	useEffect(() => {
+		// Always fetch tasks
 		dispatch(fetchTasks());
-	}, [dispatch]);
+
+		// If admin, also fetch users
+		if (userRole === "admin") {
+			axios
+				.get("http://localhost:8000/api/users", {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
+					},
+				})
+				.then((res) => setUsers(res.data))
+				.catch((err) => console.error("Error fetching users:", err));
+		}
+	}, [dispatch, userRole]);
+
 
 
 
@@ -111,6 +151,37 @@ const AllTask = () => {
 	return (
 		<div className="flex flex-col p-4 h-full">
 			<TaskBodyHeading todoHeading="All Tasks" />
+
+			{userRole === "admin" && (
+				<div className="flex justify-end mb-4">
+					<select
+						value={selectedUser}
+						onChange={handleUserChange}
+						className={`border border-gray-300 dark:border-gray-600 
+        bg-transparent text-gray-700 dark:text-gray-100 
+        font-medium px-4 py-2 rounded-lg 
+        focus:outline-none focus:ring-2 focus:ring-indigo-500 
+        cursor-pointer transition-all`}
+					>
+						<option value="" className="dark:bg-[#1c1c1c] bg-white text-gray-700">
+							All Users
+						</option>
+						{users.map((user) => (
+							<option
+								key={user.id}
+								value={user.id}
+								className="dark:bg-[#1c1c1c] bg-white text-gray-700"
+							>
+								{user.name} ({user.role})
+							</option>
+						))}
+					</select>
+				</div>
+			)}
+
+
+			
+
 
 			<div className="flex-1 max-h-[400px] overflow-y-auto pr-2">
 
