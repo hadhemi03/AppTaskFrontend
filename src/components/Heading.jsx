@@ -153,9 +153,10 @@ const Heading = () => {
 											alt=""
 											src={
 												user && user.profile_picture
-													? `http://localhost:8000/${user.profile_picture}?t=${Date.now()}`
+													? `${user.profile_picture}?t=${Date.now()}`
 													: "https://www.citypng.com/public/uploads/preview/profile-user-round-white-icon-symbol-png-701751695033499brrbuebohc.png"
 											}
+
 											className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
 										/>
 									</MenuButton>
